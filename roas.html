@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAS Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .dark {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #94a3b8;
+            --background: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--card);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--background);
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .mode-option {
+            padding: 0.75rem;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .mode-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .channel-inputs {
+            display: none;
+        }
+
+        .channel-inputs.active {
+            display: block;
+        }
+
+        .channel-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr;
+            gap: 0.5rem;
+            align-items: end;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .channel-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--background);
+            transform: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .comparison-metrics {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-metrics.active {
+            display: grid;
+        }
+
+        .channel-metrics {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .channel-name {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .export-options {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status {
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .status.success {
+            background: rgb(16 185 129 / 0.1);
+            color: var(--success);
+            border: 1px solid rgb(16 185 129 / 0.2);
+        }
+
+        .instructions {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .instructions p {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">R</div>
+                <h1>ROAS Calculator</h1>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="grid">
+            <!-- Input Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Campaign Data
+                </div>
+
+                <div class="instructions">
+                    <p>Enter your campaign metrics to calculate ROAS and other key performance indicators.</p>
+                </div>
+
+                <div class="mode-selector">
+                    <div class="mode-option active" onclick="setMode('single')">Single Channel</div>
+                    <div class="mode-option" onclick="setMode('compare')">Compare Channels</div>
+                </div>
+
+                <!-- Single Channel Inputs -->
+                <div id="singleInputs" class="channel-inputs active">
+                    <div class="form-group">
+                        <label for="channelName">Channel Name</label>
+                        <input type="text" id="channelName" placeholder="e.g., Facebook Ads">
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label for="cost">Ad Spend (₹)</label>
+                            <input type="number" id="cost" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="impressions">Impressions</label>
+                            <input type="number" id="impressions" placeholder="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label for="clicks">Clicks</label>
+                            <input type="number" id="clicks" placeholder="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="conversions">Conversions</label>
+                            <input type="number" id="conversions" placeholder="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="revenue">Revenue (₹)</label>
+                        <input type="number" id="revenue" placeholder="0.00" min="0" step="0.01">
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn" onclick="calculateSingle()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                            </svg>
+                            Calculate
+                        </button>
+                        <button class="btn btn-ghost" onclick="clearSingle()">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Compare Channels Inputs -->
+                <div id="compareInputs" class="channel-inputs">
+                    <div class="channel-row">
+                        <div class="channel-label">Channel</div>
+                        <div>Cost (₹)</div>
+                        <div>Impressions</div>
+                        <div>Clicks</div>
+                        <div>Conversions</div>
+                        <div>Revenue (₹)</div>
+                    </div>
+
+                    <div class="channel-row">
+                        <div class="channel-label">Facebook</div>
+                        <input type="number" id="costMeta" placeholder="0.00" min="0" step="0.01">
+                        <input type="number" id="impMeta" placeholder="0" min="0">
+                        <input type="number" id="clicksMeta" placeholder="0" min="0">
+                        <input type="number" id="convMeta" placeholder="0" min="0">
+                        <input type="number" id="revMeta" placeholder="0.00" min="0" step="0.01">
+                    </div>
+
+                    <div class="channel-row">
+                        <div class="channel-label">Google</div>
+                        <input type="number" id="costGoogle" placeholder="0.00" min="0" step="0.01">
+                        <input type="number" id="impGoogle" placeholder="0" min="0">
+                        <input type="number" id="clicksGoogle" placeholder="0" min="0">
+                        <input type="number" id="convGoogle" placeholder="0" min="0">
+                        <input type="number" id="revGoogle" placeholder="0.00" min="0" step="0.01">
+                    </div>
+
+                    <div class="channel-row">
+                        <div class="channel-label">Total</div>
+                        <input type="number" id="costTotal" placeholder="0.00" min="0" step="0.01">
+                        <input type="number" id="impTotal" placeholder="0" min="0">
+                        <input type="number" id="clicksTotal" placeholder="0" min="0">
+                        <input type="number" id="convTotal" placeholder="0" min="0">
+                        <input type="number" id="revTotal" placeholder="0.00" min="0" step="0.01">
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn" onclick="calculateCompare()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                            </svg>
+                            Compare
+                        </button>
+                        <button class="btn btn-ghost" onclick="clearCompare()">Clear All</button>
+                    </div>
+                </div>
+
+                <div id="status" class="status"></div>
+
+                <div class="export-options">
+                    <button class="btn btn-ghost" onclick="exportCSV()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        CSV
+                    </button>
+                    <button class="btn btn-ghost" onclick="exportPDF()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        PDF
+                    </button>
+                    <button class="btn btn-ghost" onclick="exportJSON()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Performance Analysis
+                </div>
+
+                <!-- Single Channel Results -->
+                <div id="singleResults">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="singleCPM">-</div>
+                            <div class="metric-label">CPM</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="singleCTR">-</div>
+                            <div class="metric-label">CTR</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="singleCAC">-</div>
+                            <div class="metric-label">CAC</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="singleROAS">-</div>
+                            <div class="metric-label">ROAS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compare Channels Results -->
+                <div id="compareResults" class="comparison-metrics">
+                    <div class="channel-metrics">
+                        <div class="channel-name">Facebook</div>
+                        <div class="metric-value" id="metaCPM">-</div>
+                        <div class="metric-label">CPM</div>
+                        <div class="metric-value" id="metaCTR">-</div>
+                        <div class="metric-label">CTR</div>
+                        <div class="metric-value" id="metaCAC">-</div>
+                        <div class="metric-label">CAC</div>
+                        <div class="metric-value" id="metaROAS">-</div>
+                        <div class="metric-label">ROAS</div>
+                    </div>
+                    <div class="channel-metrics">
+                        <div class="channel-name">Google</div>
+                        <div class="metric-value" id="googleCPM">-</div>
+                        <div class="metric-label">CPM</div>
+                        <div class="metric-value" id="googleCTR">-</div>
+                        <div class="metric-label">CTR</div>
+                        <div class="metric-value" id="googleCAC">-</div>
+                        <div class="metric-label">CAC</div>
+                        <div class="metric-value" id="googleROAS">-</div>
+                        <div class="metric-label">ROAS</div>
+                    </div>
+                    <div class="channel-metrics">
+                        <div class="channel-name">Total</div>
+                        <div class="metric-value" id="totalCPM">-</div>
+                        <div class="metric-label">CPM</div>
+                        <div class="metric-value" id="totalCTR">-</div>
+                        <div class="metric-label">CTR</div>
+                        <div class="metric-value" id="totalCAC">-</div>
+                        <div class="metric-label">CAC</div>
+                        <div class="metric-value" id="totalROAS">-</div>
+                        <div class="metric-label">ROAS</div>
+                    </div>
+                </div>
+
+                <canvas id="chart" style="margin-top: 2rem;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Initialize theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
+        }
+
+        // Mode Management
+        function setMode(mode) {
+            document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.channel-inputs').forEach(input => input.classList.remove('active'));
+            
+            if (mode === 'single') {
+                document.querySelector('.mode-option:nth-child(1)').classList.add('active');
+                document.getElementById('singleInputs').classList.add('active');
+                document.getElementById('singleResults').style.display = 'block';
+                document.getElementById('compareResults').classList.remove('active');
+            } else {
+                document.querySelector('.mode-option:nth-child(2)').classList.add('active');
+                document.getElementById('compareInputs').classList.add('active');
+                document.getElementById('singleResults').style.display = 'none';
+                document.getElementById('compareResults').classList.add('active');
+            }
+            
+            // Clear chart
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+        }
+
+        // Utility Functions
+        function formatCurrency(value) {
+            return '₹' + parseFloat(value).toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function formatPercent(value) {
+            return parseFloat(value).toFixed(2) + '%';
+        }
+
+        function formatRatio(value) {
+            return parseFloat(value).toFixed(2) + 'x';
+        }
+
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Single Channel Calculation
+        function calculateSingle() {
+            const cost = parseFloat(document.getElementById('cost').value) || 0;
+            const impressions = parseFloat(document.getElementById('impressions').value) || 0;
+            const clicks = parseFloat(document.getElementById('clicks').value) || 0;
+            const conversions = parseFloat(document.getElementById('conversions').value) || 0;
+            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+
+            if (cost <= 0 || impressions <= 0) {
+                showStatus('Please enter valid cost and impression values', 'error');
+                return;
+            }
+
+            // Calculate metrics
+            const cpm = (cost / impressions) * 1000;
+            const ctr = (clicks / impressions) * 100;
+            const cac = conversions > 0 ? cost / conversions : 0;
+            const roas = cost > 0 ? revenue / cost : 0;
+
+            // Update UI
+            document.getElementById('singleCPM').textContent = formatCurrency(cpm);
+            document.getElementById('singleCTR').textContent = formatPercent(ctr);
+            document.getElementById('singleCAC').textContent = formatCurrency(cac);
+            document.getElementById('singleROAS').textContent = formatRatio(roas);
+
+            // Update chart
+            updateChart([{
+                label: document.getElementById('channelName').value || 'Channel',
+                cpm, ctr, cac, roas
+            }]);
+
+            showStatus('Metrics calculated successfully');
+        }
+
+        function clearSingle() {
+            document.getElementById('cost').value = '';
+            document.getElementById('impressions').value = '';
+            document.getElementById('clicks').value = '';
+            document.getElementById('conversions').value = '';
+            document.getElementById('revenue').value = '';
+            document.getElementById('channelName').value = '';
+            
+            document.getElementById('singleCPM').textContent = '-';
+            document.getElementById('singleCTR').textContent = '-';
+            document.getElementById('singleCAC').textContent = '-';
+            document.getElementById('singleROAS').textContent = '-';
+            
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+            
+            showStatus('Form cleared');
+        }
+
+        // Compare Channels Calculation
+        function calculateCompare() {
+            const channels = [
+                {
+                    name: 'Facebook',
+                    cost: parseFloat(document.getElementById('costMeta').value) || 0,
+                    impressions: parseFloat(document.getElementById('impMeta').value) || 0,
+                    clicks: parseFloat(document.getElementById('clicksMeta').value) || 0,
+                    conversions: parseFloat(document.getElementById('convMeta').value) || 0,
+                    revenue: parseFloat(document.getElementById('revMeta').value) || 0
+                },
+                {
+                    name: 'Google',
+                    cost: parseFloat(document.getElementById('costGoogle').value) || 0,
+                    impressions: parseFloat(document.getElementById('impGoogle').value) || 0,
+                    clicks: parseFloat(document.getElementById('clicksGoogle').value) || 0,
+                    conversions: parseFloat(document.getElementById('convGoogle').value) || 0,
+                    revenue: parseFloat(document.getElementById('revGoogle').value) || 0
+                },
+                {
+                    name: 'Total',
+                    cost: parseFloat(document.getElementById('costTotal').value) || 0,
+                    impressions: parseFloat(document.getElementById('impTotal').value) || 0,
+                    clicks: parseFloat(document.getElementById('clicksTotal').value) || 0,
+                    conversions: parseFloat(document.getElementById('convTotal').value) || 0,
+                    revenue: parseFloat(document.getElementById('revTotal').value) || 0
+                }
+            ];
+
+            // Validate inputs
+            if (channels[0].cost <= 0 || channels[0].impressions <= 0 || 
+                channels[1].cost <= 0 || channels[1].impressions <= 0) {
+                showStatus('Please enter valid cost and impression values for all channels', 'error');
+                return;
+            }
+
+            // Calculate metrics for each channel
+            const metrics = channels.map(channel => {
+                const cpm = (channel.cost / channel.impressions) * 1000;
+                const ctr = (channel.clicks / channel.impressions) * 100;
+                const cac = channel.conversions > 0 ? channel.cost / channel.conversions : 0;
+                const roas = channel.cost > 0 ? channel.revenue / channel.cost : 0;
+
+                return {
+                    ...channel,
+                    cpm, ctr, cac, roas
+                };
+            });
+
+            // Update UI
+            metrics.forEach((metric, index) => {
+                const prefix = index === 0 ? 'meta' : index === 1 ? 'google' : 'total';
+                document.getElementById(`${prefix}CPM`).textContent = formatCurrency(metric.cpm);
+                document.getElementById(`${prefix}CTR`).textContent = formatPercent(metric.ctr);
+                document.getElementById(`${prefix}CAC`).textContent = formatCurrency(metric.cac);
+                document.getElementById(`${prefix}ROAS`).textContent = formatRatio(metric.roas);
+            });
+
+            // Update chart
+            updateChart(metrics);
+
+            showStatus('Channel comparison calculated successfully');
+        }
+
+        function clearCompare() {
+            ['Meta', 'Google', 'Total'].forEach(prefix => {
+                document.getElementById(`cost${prefix}`).value = '';
+                document.getElementById(`imp${prefix}`).value = '';
+                document.getElementById(`clicks${prefix}`).value = '';
+                document.getElementById(`conv${prefix}`).value = '';
+                document.getElementById(`rev${prefix}`).value = '';
+            });
+
+            ['meta', 'google', 'total'].forEach(prefix => {
+                document.getElementById(`${prefix}CPM`).textContent = '-';
+                document.getElementById(`${prefix}CTR`).textContent = '-';
+                document.getElementById(`${prefix}CAC`).textContent = '-';
+                document.getElementById(`${prefix}ROAS`).textContent = '-';
+            });
+
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+
+            showStatus('All inputs cleared');
+        }
+
+        // Chart Management
+        function updateChart(data) {
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+
+            const labels = data.map(item => item.name);
+            const datasets = [
+                {
+                    label: 'CPM (₹)',
+                    data: data.map(item => item.cpm),
+                    backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'CTR (%)',
+                    data: data.map(item => item.ctr),
+                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'CAC (₹)',
+                    data: data.map(item => item.cac),
+                    backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'ROAS (x)',
+                    data: data.map(item => item.roas),
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                }
+            ];
+
+            window.chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Currency (₹)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Percentage & Ratio'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export Functions
+        function exportCSV() {
+            const mode = document.querySelector('.mode-option.active').textContent;
+            let csvContent = "Channel,Cost,Impressions,Clicks,Conversions,Revenue,CPM,CTR,CAC,ROAS\n";
+
+            if (mode === 'Single Channel') {
+                const cost = document.getElementById('cost').value || 0;
+                const impressions = document.getElementById('impressions').value || 0;
+                const clicks = document.getElementById('clicks').value || 0;
+                const conversions = document.getElementById('conversions').value || 0;
+                const revenue = document.getElementById('revenue').value || 0;
+                const cpm = document.getElementById('singleCPM').textContent;
+                const ctr = document.getElementById('singleCTR').textContent;
+                const cac = document.getElementById('singleCAC').textContent;
+                const roas = document.getElementById('singleROAS').textContent;
+                
+                csvContent += `${document.getElementById('channelName').value || 'Channel'},${cost},${impressions},${clicks},${conversions},${revenue},${cpm},${ctr},${cac},${roas}\n`;
+            } else {
+                ['Meta', 'Google', 'Total'].forEach(prefix => {
+                    const cost = document.getElementById(`cost${prefix}`).value || 0;
+                    const impressions = document.getElementById(`imp${prefix}`).value || 0;
+                    const clicks = document.getElementById(`clicks${prefix}`).value || 0;
+                    const conversions = document.getElementById(`conv${prefix}`).value || 0;
+                    const revenue = document.getElementById(`rev${prefix}`).value || 0;
+                    const cpm = document.getElementById(`${prefix.toLowerCase()}CPM`).textContent;
+                    const ctr = document.getElementById(`${prefix.toLowerCase()}CTR`).textContent;
+                    const cac = document.getElementById(`${prefix.toLowerCase()}CAC`).textContent;
+                    const roas = document.getElementById(`${prefix.toLowerCase()}ROAS`).textContent;
+                    
+                    csvContent += `${prefix},${cost},${impressions},${clicks},${conversions},${revenue},${cpm},${ctr},${cac},${roas}\n`;
+                });
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'roas-data.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            showStatus('CSV exported successfully');
+        }
+
+        function exportPDF() {
+            showStatus('PDF export would be implemented with a proper library');
+        }
+
+        function exportJSON() {
+            const mode = document.querySelector('.mode-option.active').textContent;
+            let data = {};
+
+            if (mode === 'Single Channel') {
+                data = {
+                    channel: document.getElementById('channelName').value || 'Channel',
+                    cost: document.getElementById('cost').value || 0,
+                    impressions: document.getElementById('impressions').value || 0,
+                    clicks: document.getElementById('clicks').value || 0,
+                    conversions: document.getElementById('conversions').value || 0,
+                    revenue: document.getElementById('revenue').value || 0,
+                    metrics: {
+                        cpm: document.getElementById('singleCPM').textContent,
+                        ctr: document.getElementById('singleCTR').textContent,
+                        cac: document.getElementById('singleCAC').textContent,
+                        roas: document.getElementById('singleROAS').textContent
+                    }
+                };
+            } else {
+                data = {
+                    channels: ['Meta', 'Google', 'Total'].map(prefix => ({
+                        name: prefix,
+                        cost: document.getElementById(`cost${prefix}`).value || 0,
+                        impressions: document.getElementById(`imp${prefix}`).value || 0,
+                        clicks: document.getElementById(`clicks${prefix}`).value || 0,
+                        conversions: document.getElementById(`conv${prefix}`).value || 0,
+                        revenue: document.getElementById(`rev${prefix}`).value || 0,
+                        metrics: {
+                            cpm: document.getElementById(`${prefix.toLowerCase()}CPM`).textContent,
+                            ctr: document.getElementById(`${prefix.toLowerCase()}CTR`).textContent,
+                            cac: document.getElementById(`${prefix.toLowerCase()}CAC`).textContent,
+                            roas: document.getElementById(`${prefix.toLowerCase()}ROAS`).textContent
+                        }
+                    }))
+                };
+            }
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'roas-data.json';
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            showStatus('JSON exported successfully');
+        }
+    </script>
+</body>
+</html>

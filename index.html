@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Ad Preview Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #4a6de5;
+            --secondary: #f8f9fa;
+            --dark: #1c1e21;
+            --light: #ffffff;
+            --meta-blue: #1877f2;
+            --instagram-purple: #c32aa3;
+            --instagram-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --google-blue: #4285f4;
+            --google-red: #ea4335;
+            --google-yellow: #fbbc05;
+            --google-green: #34a853;
+            --linkedin-blue: #0a66c2;
+            --twitter-blue: #1da1f2;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e4e6eb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 800px;
+            background: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 360px;
+            background: var(--light);
+            padding: 25px;
+            border-right: 1px solid #e4e4e4;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f0f2f5;
+        }
+
+        .platform-tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 18px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #65676b;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .preview-container {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+        }
+
+        .preview {
+            width: 100%;
+            max-width: 500px;
+            background: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .preview:hover {
+            transform: translateY(-5px);
+        }
+
+        .preview-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .preview-body {
+            padding: 16px;
+        }
+
+        .preview-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            color: #65676b;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 109, 229, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a5bd0;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .platform-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-size: 10px;
+        }
+
+        .meta-icon {
+            background: var(--meta-blue);
+        }
+
+        .instagram-icon {
+            background: var(--instagram-purple);
+        }
+
+        .google-icon {
+            background: var(--google-blue);
+        }
+
+        .linkedin-icon {
+            background: var(--linkedin-blue);
+        }
+
+        .twitter-icon {
+            background: var(--twitter-blue);
+        }
+
+        .ad-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(45deg, #6a89cc, #4a69bd);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .ad-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .ad-title {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 5px;
+            color: #1d1f23;
+            line-height: 1.3;
+        }
+
+        .ad-description {
+            color: #65676b;
+            font-size: 15px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .ad-url {
+            color: #65676b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .meta-preview .preview-header {
+            background: #f0f2f5;
+        }
+
+        .instagram-preview .preview-header {
+            background: #fafafa;
+        }
+
+        .google-preview .preview-header {
+            background: #f8f9fa;
+        }
+
+        .linkedin-preview .preview-header {
+            background: #f3f6f8;
+        }
+
+        .twitter-preview .preview-header {
+            background: #f7f9fa;
+        }
+
+        .google-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .google-logo span {
+            font-size: 18px;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .google-blue { color: var(--google-blue); }
+        .google-red { color: var(--google-red); }
+        .google-yellow { color: var(--google-yellow); }
+        .google-green { color: var(--google-green); }
+
+        h1 {
+            color: var(--dark);
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #1a73e8;
+            line-height: 1.5;
+        }
+
+        .instructions i {
+            margin-right: 8px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eaeaea;
+            color: var(--dark);
+        }
+
+        .preview-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .post-meta {
+            color: #65676b;
+            font-size: 13px;
+        }
+
+        .sponsored-badge {
+            color: #65676b;
+            font-size: 13px;
+            margin-left: 5px;
+        }
+
+        .engagement {
+            display: flex;
+            justify-content: space-between;
+            color: #65676b;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .twitter-engagement {
+            display: flex;
+            gap: 20px;
+            color: #536471;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .twitter-engagement span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-preview {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .search-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 8px 15px;
+            margin: 0 15px;
+        }
+
+        .search-box input {
+            border: none;
+            padding: 5px;
+            margin: 0;
+            box-shadow: none;
+        }
+
+        .search-box input:focus {
+            box-shadow: none;
+        }
+
+        .google-apps {
+            display: flex;
+            gap: 15px;
+            color: #5f6368;
+        }
+
+        .ad-badge {
+            background: #f1f3f4;
+            color: #4d5156;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .ad-extension {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .extension-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .extension-icon {
+            width: 40px;
+            height: 40px;
+            background: #f1f3f4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #5f6368;
+        }
+
+        .extension-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .extension-text p {
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .linkedin-logo {
+            color: var(--linkedin-blue);
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .twitter-logo {
+            color: var(--twitter-blue);
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .toggle-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .live-indicator {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #4CAF50;
+            color: white;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .live-pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .character-count {
+            text-align: right;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Instagram-specific styles */
+        .instagram-preview .preview-body {
+            padding: 0;
+        }
+
+        .instagram-header {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            border-bottom: 1px solid #efefef;
+        }
+
+        .instagram-header .profile-pic {
+            margin-right: 12px;
+        }
+
+        .instagram-header .profile-info {
+            flex: 1;
+        }
+
+        .instagram-header .profile-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .instagram-header .post-meta {
+            color: #8e8e8e;
+            font-size: 12px;
+        }
+
+        .instagram-header .menu-icon {
+            color: #262626;
+            font-size: 16px;
+        }
+
+        .instagram-image {
+            width: 100%;
+            height: 320px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .instagram-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            font-size: 24px;
+        }
+
+        .instagram-actions-left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .instagram-actions-right {
+            color: #262626;
+        }
+
+        .instagram-likes {
+            padding: 0 16px 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .instagram-caption {
+            padding: 0 16px 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .instagram-caption .profile-name {
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .instagram-caption .caption-text {
+            color: #262626;
+        }
+
+        .instagram-comments {
+            padding: 0 16px 8px;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+
+        .instagram-time {
+            padding: 0 16px 8px;
+            color: #8e8e8e;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .instagram-cta {
+            padding: 0 16px 16px;
+        }
+
+        .instagram-cta button {
+            background: transparent;
+            border: 1px solid #dbdbdb;
+            color: #0095f6;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 5px 9px;
+            border-radius: 4px;
+            width: auto;
+        }
+
+        .instagram-gradient-icon {
+            background: var(--instagram-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+        }
+
+        /* Image upload styles */
+        .image-upload-container {
+            margin-bottom: 20px;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background-color: rgba(74, 109, 229, 0.05);
+        }
+
+        .image-upload-area i {
+            font-size: 40px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .image-upload-area p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #3a5bd0;
+        }
+
+        .remove-image {
+            color: #e74c3c;
+            cursor: pointer;
+            display: none;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Real-Time Ad Preview Tool</h1>
+            
+            <div class="instructions">
+                <i class="fas fa-info-circle"></i>
+                All changes update in real-time. No need to click any update button!
+            </div>
+
+            <div class="toggle-options">
+                <div class="toggle-option active" id="toggle-basic">Basic Options</div>
+                <div class="toggle-option" id="toggle-advanced">Advanced Options</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="headline">Headline</label>
+                <input type="text" id="headline" placeholder="Enter ad headline" value="Boost Your Business with Our Solution">
+                <div class="character-count"><span id="headline-count">0</span>/60</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" placeholder="Enter ad description">Our innovative solution helps businesses like yours increase productivity by 40%. Try it today with a 30-day free trial!</textarea>
+                <div class="character-count"><span id="description-count">0</span>/150</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="displayUrl">Display URL</label>
+                <input type="text" id="displayUrl" placeholder="example.com" value="yourbusiness.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="destinationUrl">Destination URL</label>
+                <input type="text" id="destinationUrl" placeholder="https://example.com/landing-page" value="https://yourbusiness.com/special-offer">
+            </div>
+            
+            <div class="form-group">
+                <label for="callToAction">Call to Action</label>
+                <select id="callToAction">
+                    <option>Learn More</option>
+                    <option>Sign Up</option>
+                    <option selected>Download</option>
+                    <option>Shop Now</option>
+                    <option>Contact Us</option>
+                </select>
+            </div>
+
+            <div class="section-title">Ad Creative</div>
+            
+            <div class="image-upload-container">
+                <label>Upload Ad Image</label>
+                <div class="image-upload-area" id="imageUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload an image or drag and drop</p>
+                    <span class="upload-btn">Select Image</span>
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                </div>
+                <div class="image-preview" id="imagePreview">
+                    <img id="previewImage" src="" alt="Preview">
+                </div>
+                <div class="remove-image" id="removeImage">Remove Image</div>
+            </div>
+
+            <div class="section-title">Platform-Specific Options</div>
+            
+            <div class="form-group">
+                <label for="businessName">Business/Page Name</label>
+                <input type="text" id="businessName" placeholder="Your Business Name" value="Business Solutions Inc.">
+            </div>
+            
+            <div class="form-group">
+                <label for="targetAudience">Target Audience</label>
+                <select id="targetAudience">
+                    <option>All Users</option>
+                    <option selected>Business Professionals</option>
+                    <option>Young Adults (18-24)</option>
+                    <option>Parents</option>
+                    <option>Small Business Owners</option>
+                </select>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset to Default
+                </button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="platform-tabs">
+                <div class="tab active" data-platform="meta">
+                    <i class="fab fa-facebook platform-icon meta-icon"></i>
+                    Meta Ads
+                </div>
+                <div class="tab" data-platform="instagram">
+                    <i class="fab fa-instagram platform-icon instagram-icon"></i>
+                    Instagram Ads
+                </div>
+                <div class="tab" data-platform="google">
+                    <i class="fab fa-google platform-icon google-icon"></i>
+                    Google Ads
+                </div>
+                <div class="tab" data-platform="linkedin">
+                    <i class="fab fa-linkedin platform-icon linkedin-icon"></i>
+                    LinkedIn Ads
+                </div>
+                <div class="tab" data-platform="twitter">
+                    <i class="fab fa-twitter platform-icon twitter-icon"></i>
+                    Twitter Ads
+                </div>
+            </div>
+            
+            <div class="preview-container">
+                <div class="preview meta-preview">
+                    <div class="preview-header">
+                        <i class="fab fa-facebook" style="color: #1877f2; margin-right: 8px;"></i>
+                        <span style="font-weight: 600;">Facebook Ad Preview</span>
+                        <div class="live-indicator">
+                            <span class="live-pulse"></span>
+                            LIVE
+                        </div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-meta">
+                            <div class="profile-pic">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="profile-info">
+                                <div class="profile-name" id="meta-business-name">Business Solutions Inc.</div>
+                                <div class="post-meta">
+                                    Sponsored <i class="fas fa-globe-americas"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ad-description" id="meta-description">Our innovative solution helps businesses like yours increase productivity by 40%. Try it today with a 30-day free trial!</div>
+                        <div class="ad-image" id="meta-ad-image">
+                            Ad Creative Image
+                        </div>
+                        <div class="ad-url" id="meta-url">yourbusiness.com</div>
+                        <div class="ad-title" id="meta-headline">Boost Your Business with Our Solution</div>
+                        <div class="engagement">
+                            <span><i class="far fa-thumbs-up"></i> 125</span>
+                            <span>24 comments · 8 shares</span>
+                        </div>
+                    </div>
+                    <div class="preview-footer">
+                        <span><i class="far fa-thumbs-up"></i> Like</span>
+                        <span><i class="far fa-comment"></i> Comment</span>
+                        <span><i class="far fa-share-square"></i> Share</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const previewContainer = document.querySelector('.preview-container');
+            const headlineInput = document.getElementById('headline');
+            const descriptionInput = document.getElementById('description');
+            const displayUrlInput = document.getElementById('displayUrl');
+            const destinationUrlInput = document.getElementById('destinationUrl');
+            const callToActionInput = document.getElementById('callToAction');
+            const businessNameInput = document.getElementById('businessName');
+            const targetAudienceInput = document.getElementById('targetAudience');
+            const resetBtn = document.getElementById('resetBtn');
+            const toggleOptions = document.querySelectorAll('.toggle-option');
+            const headlineCount = document.getElementById('headline-count');
+            const descriptionCount = document.getElementById('description-count');
+            const imageUpload = document.getElementById('imageUpload');
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            const removeImage = document.getElementById('removeImage');
+            
+            let uploadedImage = null;
+            
+            // Initialize character counts
+            headlineCount.textContent = headlineInput.value.length;
+            descriptionCount.textContent = descriptionInput.value.length;
+            
+            // Image upload functionality
+            imageUploadArea.addEventListener('click', function() {
+                imageUpload.click();
+            });
+            
+            imageUpload.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        uploadedImage = event.target.result;
+                        previewImage.src = uploadedImage;
+                        imagePreview.style.display = 'block';
+                        removeImage.style.display = 'block';
+                        imageUploadArea.style.display = 'none';
+                        
+                        // Update preview with new image
+                        const activeTab = document.querySelector('.tab.active');
+                        const platform = activeTab.getAttribute('data-platform');
+                        updatePreview(platform);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            removeImage.addEventListener('click', function() {
+                uploadedImage = null;
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+                removeImage.style.display = 'none';
+                imageUploadArea.style.display = 'block';
+                imageUpload.value = '';
+                
+                // Update preview to remove image
+                const activeTab = document.querySelector('.tab.active');
+                const platform = activeTab.getAttribute('data-platform');
+                updatePreview(platform);
+            });
+            
+            // Platform templates
+            const platforms = {
+                meta: {
+                    name: 'Meta Ads',
+                    template: function() {
+                        const imageStyle = uploadedImage ? `background-image: url('${uploadedImage}')` : '';
+                        const imageContent = uploadedImage ? '' : 'Ad Creative Image';
+                        
+                        return `
+                        <div class="preview meta-preview">
+                            <div class="preview-header">
+                                <i class="fab fa-facebook" style="color: #1877f2; margin-right: 8px;"></i>
+                                <span style="font-weight: 600;">Facebook Ad Preview</span>
+                                <div class="live-indicator">
+                                    <span class="live-pulse"></span>
+                                    LIVE
+                                </div>
+                            </div>
+                            <div class="preview-body">
+                                <div class="preview-meta">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="profile-info">
+                                        <div class="profile-name" id="meta-business-name">${businessNameInput.value}</div>
+                                        <div class="post-meta">
+                                            Sponsored <i class="fas fa-globe-americas"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ad-description" id="meta-description">${descriptionInput.value}</div>
+                                <div class="ad-image" id="meta-ad-image" style="${imageStyle}">
+                                    ${imageContent}
+                                </div>
+                                <div class="ad-url" id="meta-url">${displayUrlInput.value}</div>
+                                <div class="ad-title" id="meta-headline">${headlineInput.value}</div>
+                                <div class="engagement">
+                                    <span><i class="far fa-thumbs-up"></i> 125</span>
+                                    <span>24 comments · 8 shares</span>
+                                </div>
+                            </div>
+                            <div class="preview-footer">
+                                <span><i class="far fa-thumbs-up"></i> Like</span>
+                                <span><i class="far fa-comment"></i> Comment</span>
+                                <span><i class="far fa-share-square"></i> Share</span>
+                            </div>
+                        </div>
+                        `;
+                    }
+                },
+                instagram: {
+                    name: 'Instagram Ads',
+                    template: function() {
+                        const imageStyle = uploadedImage ? `background-image: url('${uploadedImage}')` : '';
+                        const imageContent = uploadedImage ? '' : 'Ad Creative Image';
+                        
+                        return `
+                        <div class="preview instagram-preview">
+                            <div class="preview-header">
+                                <i class="fab fa-instagram instagram-gradient-icon" style="margin-right: 8px;"></i>
+                                <span style="font-weight: 600;">Instagram Ad Preview</span>
+                                <div class="live-indicator">
+                                    <span class="live-pulse"></span>
+                                    LIVE
+                                </div>
+                            </div>
+                            <div class="preview-body">
+                                <div class="instagram-header">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="profile-info">
+                                        <div class="profile-name" id="instagram-business-name">${businessNameInput.value}</div>
+                                        <div class="post-meta">Sponsored</div>
+                                    </div>
+                                    <div class="menu-icon">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </div>
+                                </div>
+                                <div class="instagram-image" style="${imageStyle}">
+                                    ${imageContent}
+                                </div>
+                                <div class="instagram-actions">
+                                    <div class="instagram-actions-left">
+                                        <i class="far fa-heart"></i>
+                                        <i class="far fa-comment"></i>
+                                        <i class="far fa-paper-plane"></i>
+                                    </div>
+                                    <div class="instagram-actions-right">
+                                        <i class="far fa-bookmark"></i>
+                                    </div>
+                                </div>
+                                <div class="instagram-likes">1,245 likes</div>
+                                <div class="instagram-caption">
+                                    <span class="profile-name">${businessNameInput.value}</span>
+                                    <span class="caption-text">${descriptionInput.value}</span>
+                                </div>
+                                <div class="instagram-comments">View all 24 comments</div>
+                                <div class="instagram-time">2 hours ago</div>
+                                <div class="instagram-cta">
+                                    <button>${callToActionInput.value}</button>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                },
+                google: {
+                    name: 'Google Ads',
+                    template: function() {
+                        const imageStyle = uploadedImage ? `background-image: url('${uploadedImage}')` : '';
+                        const imageContent = uploadedImage ? '' : 'Ad Creative Image';
+                        
+                        return `
+                        <div class="search-preview">
+                            <div class="search-header">
+                                <div class="google-logo">
+                                    <span class="google-blue">G</span><span class="google-red">o</span><span class="google-yellow">o</span><span class="google-blue">g</span><span class="google-green">l</span><span class="google-red">e</span>
+                                </div>
+                                <div class="search-box">
+                                    <i class="fas fa-search" style="color: #9aa0a6; margin-right: 10px;"></i>
+                                    <input type="text" value="${headlineInput.value}" style="flex: 1; border: none; outline: none;">
+                                    <i class="fas fa-microphone" style="color: #4285f4; margin-left: 10px;"></i>
+                                </div>
+                                <div class="google-apps">
+                                    <i class="fas fa-th"></i>
+                                    <i class="fas fa-user-circle" style="font-size: 24px; color: #5f6368;"></i>
+                                </div>
+                            </div>
+                            <div style="padding: 0 20px;">
+                                <div class="ad-badge">Ad</div>
+                                <div class="ad-url" style="color: #006621; font-size: 14px; line-height: 1.3;">${displayUrlInput.value} › <span style="color: #5f6368;">Current Page</span></div>
+                                <div class="ad-title" style="color: #1a0dab; font-size: 20px; line-height: 1.3; margin: 5px 0;">${headlineInput.value}</div>
+                                <div class="ad-image" style="${imageStyle}; height: 150px; margin-bottom: 10px;">
+                                    ${imageContent}
+                                </div>
+                                <div class="ad-description" style="color: #4d5156; line-height: 1.58;">${descriptionInput.value}</div>
+                                <div class="ad-extension">
+                                    <div class="extension-item">
+                                        <div class="extension-icon">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="extension-text">
+                                            <h4>Mobile App</h4>
+                                            <p>Download our app for a better experience</p>
+                                        </div>
+                                    </div>
+                                    <div class="extension-item">
+                                        <div class="extension-icon">
+                                            <i class="fas fa-headset"></i>
+                                        </div>
+                                        <div class="extension-text">
+                                            <h4>24/7 Support</h4>
+                                            <p>Get help anytime with our support team</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                },
+                linkedin: {
+                    name: 'LinkedIn Ads',
+                    template: function() {
+                        const imageStyle = uploadedImage ? `background-image: url('${uploadedImage}')` : '';
+                        const imageContent = uploadedImage ? '' : 'Ad Creative Image';
+                        
+                        return `
+                        <div class="preview linkedin-preview">
+                            <div class="preview-header">
+                                <i class="fab fa-linkedin linkedin-logo"></i>
+                                <span style="font-weight: 600;">LinkedIn Ad Preview</span>
+                                <div class="live-indicator">
+                                    <span class="live-pulse"></span>
+                                    LIVE
+                                </div>
+                            </div>
+                            <div class="preview-body">
+                                <div class="preview-meta">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="profile-info">
+                                        <div class="profile-name" id="linkedin-business-name">${businessNameInput.value}</div>
+                                        <div class="post-meta">
+                                            Sponsored · <span id="linkedin-audience">${targetAudienceInput.value}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ad-description" id="linkedin-description">${descriptionInput.value}</div>
+                                <div class="ad-image" style="${imageStyle}">
+                                    ${imageContent}
+                                </div>
+                                <div class="ad-title" id="linkedin-headline" style="margin-top: 10px;">${headlineInput.value}</div>
+                                <div class="ad-url" id="linkedin-url" style="margin-top: 5px;">${displayUrlInput.value}</div>
+                                <div style="margin-top: 15px;">
+                                    <button style="background: #0a66c2; color: white; border-radius: 20px; padding: 8px 20px; font-weight: 600; width: auto;">${callToActionInput.value}</button>
+                                </div>
+                            </div>
+                            <div class="preview-footer">
+                                <span><i class="far fa-thumbs-up"></i> Like</span>
+                                <span><i class="far fa-comment"></i> Comment</span>
+                                <span><i class="far fa-share-square"></i> Share</span>
+                            </div>
+                        </div>
+                        `;
+                    }
+                },
+                twitter: {
+                    name: 'Twitter Ads',
+                    template: function() {
+                        const imageStyle = uploadedImage ? `background-image: url('${uploadedImage}')` : '';
+                        const imageContent = uploadedImage ? '' : 'Ad Creative Image';
+                        
+                        return `
+                        <div class="preview twitter-preview">
+                            <div class="preview-header">
+                                <i class="fab fa-twitter twitter-logo"></i>
+                                <span style="font-weight: 600;">Twitter Ad Preview</span>
+                                <div class="live-indicator">
+                                    <span class="live-pulse"></span>
+                                    LIVE
+                                </div>
+                            </div>
+                            <div class="preview-body">
+                                <div class="preview-meta">
+                                    <div class="profile-pic">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="profile-info">
+                                        <div class="profile-name" id="twitter-business-name">${businessNameInput.value} <span class="sponsored-badge">Promoted</span></div>
+                                        <div class="post-meta">@${businessNameInput.value.replace(/\s+/g, '').toLowerCase()} · 2h</div>
+                                    </div>
+                                    <i class="fas fa-chevron-down" style="margin-left: auto; color: #536471;"></i>
+                                </div>
+                                <div class="ad-description" id="twitter-description">${descriptionInput.value}</div>
+                                <div class="ad-image" style="${imageStyle}">
+                                    ${imageContent}
+                                </div>
+                                <div class="ad-title" id="twitter-headline" style="margin-top: 10px;">${headlineInput.value}</div>
+                                <div class="ad-url" id="twitter-url" style="margin-top: 5px; color: #1d9bf0;">${displayUrlInput.value}</div>
+                                <div class="twitter-engagement">
+                                    <span><i class="far fa-comment"></i> 24</span>
+                                    <span><i class="fas fa-retweet"></i> 8</span>
+                                    <span><i class="far fa-heart"></i> 42</span>
+                                    <span><i class="far fa-share-square"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                }
+            };
+            
+            // Switch between platforms
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const platform = this.getAttribute('data-platform');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update preview
+                    updatePreview(platform);
+                });
+            });
+            
+            // Toggle between basic and advanced options
+            toggleOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    toggleOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real app, we would show/hide advanced options
+                    // For this demo, we'll just show an alert
+                    if (this.id === 'toggle-advanced') {
+                        alert('Advanced options would include: Audience targeting, Budget settings, Placement options, and more detailed tracking parameters.');
+                    }
+                });
+            });
+            
+            // Update preview function
+            function updatePreview(platform) {
+                const platformData = platforms[platform];
+                previewContainer.innerHTML = platformData.template();
+            }
+            
+            // Add live update event listeners to all inputs
+            const allInputs = [
+                headlineInput, 
+                descriptionInput, 
+                displayUrlInput, 
+                destinationUrlInput, 
+                callToActionInput,
+                businessNameInput,
+                targetAudienceInput
+            ];
+            
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const activeTab = document.querySelector('.tab.active');
+                    const platform = activeTab.getAttribute('data-platform');
+                    
+                    // Update character counts for headline and description
+                    if (input === headlineInput) {
+                        headlineCount.textContent = input.value.length;
+                    }
+                    if (input === descriptionInput) {
+                        descriptionCount.textContent = input.value.length;
+                    }
+                    
+                    updatePreview(platform);
+                });
+            });
+            
+            // Reset form
+            resetBtn.addEventListener('click', function() {
+                headlineInput.value = 'Boost Your Business with Our Solution';
+                descriptionInput.value = 'Our innovative solution helps businesses like yours increase productivity by 40%. Try it today with a 30-day free trial!';
+                displayUrlInput.value = 'yourbusiness.com';
+                destinationUrlInput.value = 'https://yourbusiness.com/special-offer';
+                callToActionInput.value = 'Download';
+                businessNameInput.value = 'Business Solutions Inc.';
+                targetAudienceInput.value = 'Business Professionals';
+                
+                // Reset image
+                uploadedImage = null;
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+                removeImage.style.display = 'none';
+                imageUploadArea.style.display = 'block';
+                imageUpload.value = '';
+                
+                // Update character counts
+                headlineCount.textContent = headlineInput.value.length;
+                descriptionCount.textContent = descriptionInput.value.length;
+                
+                // Update preview with reset values
+                const activeTab = document.querySelector('.tab.active');
+                const platform = activeTab.getAttribute('data-platform');
+                updatePreview(platform);
+            });
+            
+            // Initialize with Meta preview
+            updatePreview('meta');
+        });
+    </script>
+</body>
+</html>

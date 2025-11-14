@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Toolbox</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --toolbox-dark: #2c3e50;
+            --toolbox-light: #34495e;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --text: #333;
+            --text-light: #7f8c8d;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .toolbox-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e1e8ed;
+        }
+
+        /* Header with toolbox design */
+        header {
+            background: var(--toolbox-dark);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        h1 i {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Toolbox Body */
+        .toolbox-body {
+            padding: 40px 30px;
+        }
+
+        .tools-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--toolbox-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        /* Tool Grid */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid #eaeaea;
+            position: relative;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .tool-icon {
+            background: var(--toolbox-dark);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 2.2rem;
+            position: relative;
+        }
+
+        .tool-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        .tool-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-title {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--toolbox-dark);
+            font-weight: 600;
+        }
+
+        .tool-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .tool-link {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .tool-link:hover {
+            background: var(--toolbox-dark);
+        }
+
+        /* Coming Soon Section */
+        .coming-soon-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #eaeaea;
+        }
+
+        .coming-soon-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--toolbox-dark);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .coming-soon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .coming-soon-item {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .coming-soon-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .coming-soon-item i {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .coming-soon-item h4 {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid #eaeaea;
+            background: #f8f9fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .coming-soon-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .toolbox-body {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .coming-soon-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbox-container">
+        <header>
+            <h1><i class="fas fa-toolbox"></i> Marketing Toolbox</h1>
+            <p class="subtitle">Your essential toolkit for marketing success. Select a tool to get started.</p>
+        </header>
+
+        <div class="toolbox-body">
+            <div class="tools-section">
+                <h2 class="section-title"><i class="fas fa-tools"></i> Available Tools</h2>
+                <div class="tool-grid">
+                    <!-- ROAS Calculator Tool -->
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="tool-content">
+                            <h3 class="tool-title">ROAS Calculator</h3>
+                            <p class="tool-description">Calculate your Return on Ad Spend with precision. Input your campaign data to see profitability metrics and optimize your advertising strategy.</p>
+                            <a href="roas.html" class="tool-link">Open Tool</a>
+                        </div>
+                    </div>
+
+                    <!-- Ads Preview Tool -->
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-ad"></i>
+                        </div>
+                        <div class="tool-content">
+                            <h3 class="tool-title">Ads Preview Tool</h3>
+                            <p class="tool-description">Preview how your ads will appear across different platforms and devices. Test various formats and creatives before launching campaigns.</p>
+                            <a href="index.html" class="tool-link">Open Tool</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <h2 class="section-title"><i class="fas fa-wrench"></i> Tools in Development</h2>
+                <div class="coming-soon-section">
+                    <h3 class="coming-soon-title">More Tools Coming Soon</h3>
+                    <div class="coming-soon-grid">
+                        <div class="coming-soon-item">
+                            <i class="fas fa-chart-pie"></i>
+                            <h4>Campaign Analyzer</h4>
+                        </div>
+                        <div class="coming-soon-item">
+                            <i class="fas fa-search-dollar"></i>
+                            <h4>Keyword Planner</h4>
+                        </div>
+                        <div class="coming-soon-item">
+                            <i class="fas fa-users"></i>
+                            <h4>Audience Builder</h4>
+                        </div>
+                        <div class="coming-soon-item">
+                            <i class="fas fa-file-alt"></i>
+                            <h4>Content Planner</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Marketing Toolbox &copy; 2025 | Streamlining your marketing workflow</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add click functionality to all tool cards
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'A') {
+                    const link = this.querySelector('.tool-link');
+                    if (link && link.href) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
