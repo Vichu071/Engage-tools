@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Structure Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f7ff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: var(--light);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn i {
+            font-size: 1rem;
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--dark);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        .visualization {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            min-height: 600px;
+        }
+        
+        .campaign-structure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .phase {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .phase:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .phase h3 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+        
+        .phase-icon {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .phase-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .phase.active .phase-content {
+            display: block;
+        }
+        
+        .phase-1 {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        .phase-2 {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+        }
+        
+        .phase-3 {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+        }
+        
+        .phase-4 {
+            background: linear-gradient(135deg, #4ade80 0%, #06d6a0 100%);
+        }
+        
+        .campaign-list {
+            margin-top: 40px;
+        }
+        
+        .campaign-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .campaign-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .campaign-info h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+        
+        .campaign-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .campaign-details {
+            margin-top: 10px;
+            color: var(--gray);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-planning {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: var(--success);
+        }
+        
+        .status-completed {
+            background: #f3f4f6;
+            color: var(--gray);
+        }
+        
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Campaign Structure Builder</h1>
+            <p class="subtitle">Plan, visualize, and manage your digital marketing campaigns with an intuitive structure tool</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2 class="section-title" id="formTitle">Create New Campaign</h2>
+                <form id="campaignForm">
+                    <input type="hidden" id="campaignId">
+                    
+                    <div class="form-group">
+                        <label for="campaignName">Campaign Name</label>
+                        <input type="text" id="campaignName" placeholder="Enter campaign name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignGoal">Primary Goal</label>
+                        <select id="campaignGoal" required>
+                            <option value="">Select a goal</option>
+                            <option value="awareness">Brand Awareness</option>
+                            <option value="engagement">Audience Engagement</option>
+                            <option value="conversion">Lead Conversion</option>
+                            <option value="retention">Customer Retention</option>
+                            <option value="sales">Direct Sales</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignDescription">Description</label>
+                        <textarea id="campaignDescription" placeholder="Describe your campaign objectives and strategy..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignDuration">Duration (weeks)</label>
+                        <input type="number" id="campaignDuration" min="1" max="52" value="4">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignBudget">Budget ($)</label>
+                        <input type="number" id="campaignBudget" min="0" step="100" placeholder="Enter budget">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignStatus">Status</label>
+                        <select id="campaignStatus">
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-full">
+                            <i class="fas fa-plus-circle"></i> Create Campaign
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="campaign-list">
+                    <h3 class="section-title">Your Campaigns</h3>
+                    <div id="campaignsContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No campaigns yet. Create your first campaign!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization">
+                <h2 class="section-title">Campaign Structure</h2>
+                <p>Visualize your campaign flow and engagement strategy</p>
+                
+                <div class="campaign-structure">
+                    <div class="phase phase-1 active">
+                        <h3><i class="fas fa-bullseye phase-icon"></i> Phase 1: Attract & Align</h3>
+                        <p>Define your audience and value proposition</p>
+                        <div class="phase-content">
+                            <p><strong>Focus:</strong> Identify target audience, create value proposition, select channels</p>
+                            <p><strong>Activities:</strong> Market research, persona development, content planning</p>
+                        </div>
+                    </div>
+                    
+                    <div class="phase phase-2">
+                        <h3><i class="fas fa-handshake phase-icon"></i> Phase 2: Nurture & Connect</h3>
+                        <p>Build relationships through valuable content</p>
+                        <div class="phase-content">
+                            <p><strong>Focus:</strong> Build trust and two-way conversations</p>
+                            <p><strong>Activities:</strong> Email sequences, social engagement, interactive content</p>
+                        </div>
+                    </div>
+                    
+                    <div class="phase phase-3">
+                        <h3><i class="fas fa-rocket phase-icon"></i> Phase 3: Activate & Convert</h3>
+                        <p>Inspire action through compelling offers</p>
+                        <div class="phase-content">
+                            <p><strong>Focus:</strong> Convert engagement into meaningful actions</p>
+                            <p><strong>Activities:</strong> Landing pages, CTAs, lead magnets, promotions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="phase phase-4">
+                        <h3><i class="fas fa-chart-line phase-icon"></i> Phase 4: Analyze & Optimize</h3>
+                        <p>Measure results and improve performance</p>
+                        <div class="phase-content">
+                            <p><strong>Focus:</strong> Analyze performance and optimize future campaigns</p>
+                            <p><strong>Activities:</strong> KPI tracking, A/B testing, performance reporting</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-secondary" id="exportBtn">
+                        <i class="fas fa-download"></i> Export Campaign Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Deletion</h3>
+                <button class="close-btn" id="closeDeleteModal">&times;</button>
+            </div>
+            <p>Are you sure you want to delete this campaign? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let campaigns = JSON.parse(localStorage.getItem('campaigns')) || [];
+        let currentCampaignId = null;
+        let campaignToDelete = null;
+
+        // DOM Elements
+        const campaignForm = document.getElementById('campaignForm');
+        const campaignsContainer = document.getElementById('campaignsContainer');
+        const formTitle = document.getElementById('formTitle');
+        const deleteModal = document.getElementById('deleteModal');
+        const closeDeleteModal = document.getElementById('closeDeleteModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        const exportBtn = document.getElementById('exportBtn');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCampaigns();
+            
+            // Phase interaction
+            document.querySelectorAll('.phase').forEach(phase => {
+                phase.addEventListener('click', () => {
+                    document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+                    phase.classList.add('active');
+                });
+            });
+            
+            // Modal event listeners
+            closeDeleteModal.addEventListener('click', () => deleteModal.style.display = 'none');
+            cancelDelete.addEventListener('click', () => deleteModal.style.display = 'none');
+            confirmDelete.addEventListener('click', deleteCampaign);
+            
+            // Export button
+            exportBtn.addEventListener('click', exportCampaigns);
+        });
+
+        // Form submission handler
+        campaignForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('campaignId').value;
+            const name = document.getElementById('campaignName').value;
+            const goal = document.getElementById('campaignGoal').value;
+            const description = document.getElementById('campaignDescription').value;
+            const duration = document.getElementById('campaignDuration').value;
+            const budget = document.getElementById('campaignBudget').value;
+            const status = document.getElementById('campaignStatus').value;
+            
+            const campaignData = {
+                id: id || Date.now().toString(),
+                name,
+                goal,
+                description,
+                duration,
+                budget,
+                status,
+                createdAt: id ? getCampaignById(id).createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (id) {
+                // Update existing campaign
+                const index = campaigns.findIndex(c => c.id === id);
+                campaigns[index] = campaignData;
+            } else {
+                // Create new campaign
+                campaigns.push(campaignData);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('campaigns', JSON.stringify(campaigns));
+            
+            // Reset form and render campaigns
+            resetForm();
+            renderCampaigns();
+            
+            // Show success message
+            showNotification(`Campaign ${id ? 'updated' : 'created'} successfully!`, 'success');
+        });
+
+        // Render campaigns list
+        function renderCampaigns() {
+            if (campaigns.length === 0) {
+                campaignsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No campaigns yet. Create your first campaign!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            campaignsContainer.innerHTML = '';
+            
+            campaigns.forEach(campaign => {
+                const campaignElement = document.createElement('div');
+                campaignElement.className = 'campaign-item';
+                campaignElement.innerHTML = `
+                    <div class="campaign-header">
+                        <div>
+                            <h4>${campaign.name}</h4>
+                            <span class="status-badge status-${campaign.status}">${formatStatus(campaign.status)}</span>
+                        </div>
+                        <div class="campaign-details">
+                            <small>Created: ${formatDate(campaign.createdAt)}</small>
+                        </div>
+                    </div>
+                    <p>${campaign.description}</p>
+                    <div class="campaign-meta">
+                        <span><i class="fas fa-bullseye"></i> ${formatGoal(campaign.goal)}</span>
+                        <span><i class="fas fa-clock"></i> ${campaign.duration} weeks</span>
+                        <span><i class="fas fa-dollar-sign"></i> ${campaign.budget || '0'}</span>
+                    </div>
+                    <div class="campaign-actions">
+                        <button class="btn" onclick="editCampaign('${campaign.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger" onclick="confirmDeleteCampaign('${campaign.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                
+                campaignsContainer.appendChild(campaignElement);
+            });
+        }
+
+        // Edit campaign
+        function editCampaign(id) {
+            const campaign = getCampaignById(id);
+            
+            if (campaign) {
+                document.getElementById('campaignId').value = campaign.id;
+                document.getElementById('campaignName').value = campaign.name;
+                document.getElementById('campaignGoal').value = campaign.goal;
+                document.getElementById('campaignDescription').value = campaign.description;
+                document.getElementById('campaignDuration').value = campaign.duration;
+                document.getElementById('campaignBudget').value = campaign.budget;
+                document.getElementById('campaignStatus').value = campaign.status;
+                
+                formTitle.textContent = 'Edit Campaign';
+                document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Update Campaign';
+                
+                // Scroll to form
+                document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Confirm delete campaign
+        function confirmDeleteCampaign(id) {
+            campaignToDelete = id;
+            deleteModal.style.display = 'flex';
+        }
+
+        // Delete campaign
+        function deleteCampaign() {
+            if (campaignToDelete) {
+                campaigns = campaigns.filter(campaign => campaign.id !== campaignToDelete);
+                localStorage.setItem('campaigns', JSON.stringify(campaigns));
+                renderCampaigns();
+                deleteModal.style.display = 'none';
+                campaignToDelete = null;
+                
+                showNotification('Campaign deleted successfully!', 'success');
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            campaignForm.reset();
+            document.getElementById('campaignId').value = '';
+            document.getElementById('campaignDuration').value = 4;
+            formTitle.textContent = 'Create New Campaign';
+            document.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-plus-circle"></i> Create Campaign';
+        }
+
+        // Export campaigns
+        function exportCampaigns() {
+            if (campaigns.length === 0) {
+                showNotification('No campaigns to export!', 'warning');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(campaigns, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'campaigns-export.json';
+            link.click();
+            
+            showNotification('Campaigns exported successfully!', 'success');
+        }
+
+        // Helper functions
+        function getCampaignById(id) {
+            return campaigns.find(campaign => campaign.id === id);
+        }
+
+        function formatGoal(goal) {
+            const goals = {
+                'awareness': 'Brand Awareness',
+                'engagement': 'Audience Engagement',
+                'conversion': 'Lead Conversion',
+                'retention': 'Customer Retention',
+                'sales': 'Direct Sales'
+            };
+            
+            return goals[goal] || 'Unknown Goal';
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'planning': 'Planning',
+                'active': 'Active',
+                'completed': 'Completed'
+            };
+            
+            return statusMap[status] || 'Unknown';
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                transition: all 0.3s;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--warning)'};
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

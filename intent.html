@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intent Filtering Tool | Digital Marketing Agency</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c6bc0;
+            --primary-dark: #3f4da5;
+            --secondary: #26a69a;
+            --accent: #ff7043;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #78909c;
+            --light-gray: #eceff1;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f7ff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: var(--light);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn i {
+            font-size: 1rem;
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--dark);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-info {
+            background: var(--info);
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        .intent-results {
+            margin-top: 30px;
+        }
+        
+        .intent-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .intent-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .intent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .intent-type {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .intent-confidence {
+            background: var(--light);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .intent-query {
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .intent-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .keyword {
+            background: var(--light);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark);
+        }
+        
+        .intent-visualization {
+            margin-top: 30px;
+        }
+        
+        .intent-chart {
+            display: flex;
+            height: 300px;
+            gap: 15px;
+            align-items: flex-end;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: var(--primary);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.5s;
+            min-width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .chart-bar-inner {
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+            transition: height 1s;
+        }
+        
+        .chart-label {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .chart-value {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .intent-examples {
+            margin-top: 20px;
+        }
+        
+        .example-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .example-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .example-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .example-query {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .example-type {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .intent-legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Intent Filtering Tool</h1>
+            <p class="subtitle">Analyze and categorize user intent from search queries and content to optimize your digital marketing strategies</p>
+        </header>
+        
+        <div class="main-content">
+            <div>
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-filter"></i> Analyze Intent</h2>
+                    <div class="tabs">
+                        <div class="tab active" data-tab="single">Single Query</div>
+                        <div class="tab" data-tab="bulk">Bulk Analysis</div>
+                        <div class="tab" data-tab="content">Content Analysis</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="single-tab">
+                        <div class="form-group">
+                            <label for="searchQuery">Enter Search Query or Content</label>
+                            <textarea id="searchQuery" placeholder="Paste a search query, content snippet, or URL to analyze intent..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contentType">Content Type</label>
+                            <select id="contentType">
+                                <option value="search">Search Query</option>
+                                <option value="blog">Blog Content</option>
+                                <option value="social">Social Media Post</option>
+                                <option value="product">Product Page</option>
+                                <option value="landing">Landing Page</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-full" id="analyzeBtn">
+                            <i class="fas fa-search"></i> Analyze Intent
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content" id="bulk-tab">
+                        <div class="form-group">
+                            <label for="bulkQueries">Enter Multiple Queries (one per line)</label>
+                            <textarea id="bulkQueries" placeholder="Paste multiple search queries, one per line..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-full" id="analyzeBulkBtn">
+                                <i class="fas fa-search"></i> Analyze All Queries
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="content-tab">
+                        <div class="form-group">
+                            <label for="contentText">Enter Content to Analyze</label>
+                            <textarea id="contentText" placeholder="Paste your content here to analyze overall intent..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contentLanguage">Content Language</label>
+                            <select id="contentLanguage">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-full" id="analyzeContentBtn">
+                            <i class="fas fa-file-alt"></i> Analyze Content Intent
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-lightbulb"></i> Intent Examples</h2>
+                    <p>Understand different intent types with these examples:</p>
+                    
+                    <div class="intent-examples">
+                        <div class="example-list">
+                            <div class="example-item">
+                                <div class="example-query">"best running shoes for marathons"</div>
+                                <div class="example-type">Commercial Investigation</div>
+                            </div>
+                            <div class="example-item">
+                                <div class="example-query">"buy nike air zoom online"</div>
+                                <div class="example-type">Transactional</div>
+                            </div>
+                            <div class="example-item">
+                                <div class="example-query">"how to train for a marathon"</div>
+                                <div class="example-type">Informational</div>
+                            </div>
+                            <div class="example-item">
+                                <div class="example-query">"nike.com running shoes"</div>
+                                <div class="example-type">Navigational</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-chart-bar"></i> Intent Analysis Results</h2>
+                    
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Filter by:</label>
+                            <select id="intentFilter">
+                                <option value="all">All Intents</option>
+                                <option value="informational">Informational</option>
+                                <option value="navigational">Navigational</option>
+                                <option value="transactional">Transactional</option>
+                                <option value="commercial">Commercial Investigation</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Sort by:</label>
+                            <select id="sortFilter">
+                                <option value="confidence">Confidence</option>
+                                <option value="alphabetical">Alphabetical</option>
+                                <option value="type">Intent Type</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="intent-results" id="intentResults">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>No analysis yet. Enter a query to see intent analysis results.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="intent-visualization">
+                        <h3 class="section-title"><i class="fas fa-chart-pie"></i> Intent Distribution</h3>
+                        <div class="intent-chart" id="intentChart">
+                            <div class="chart-bar">
+                                <div class="chart-bar-inner" style="height: 0%; background-color: #4caf50;"></div>
+                                <div class="chart-value">0%</div>
+                                <div class="chart-label">Informational</div>
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-bar-inner" style="height: 0%; background-color: #2196f3;"></div>
+                                <div class="chart-value">0%</div>
+                                <div class="chart-label">Navigational</div>
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-bar-inner" style="height: 0%; background-color: #ff9800;"></div>
+                                <div class="chart-value">0%</div>
+                                <div class="chart-label">Transactional</div>
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-bar-inner" style="height: 0%; background-color: #9c27b0;"></div>
+                                <div class="chart-value">0%</div>
+                                <div class="chart-label">Commercial</div>
+                            </div>
+                        </div>
+                        
+                        <div class="intent-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #4caf50;"></div>
+                                <span>Informational</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #2196f3;"></div>
+                                <span>Navigational</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ff9800;"></div>
+                                <span>Transactional</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #9c27b0;"></div>
+                                <span>Commercial Investigation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Intent Statistics</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Queries Analyzed</div>
+                            <div class="stat-value" id="totalQueries">0</div>
+                            <div class="stat-label">All Time</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Most Common Intent</div>
+                            <div class="stat-value" id="commonIntent">-</div>
+                            <div class="stat-label">Current Session</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg. Confidence</div>
+                            <div class="stat-value" id="avgConfidence">0%</div>
+                            <div class="stat-label">Current Session</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button class="btn btn-secondary" id="exportBtn">
+                            <i class="fas fa-download"></i> Export Results
+                        </button>
+                        <button class="btn btn-danger" id="clearBtn">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Intent analysis data and state
+        let analyzedQueries = JSON.parse(localStorage.getItem('analyzedQueries')) || [];
+        let intentStats = JSON.parse(localStorage.getItem('intentStats')) || {
+            total: 0,
+            byType: {
+                informational: 0,
+                navigational: 0,
+                transactional: 0,
+                commercial: 0
+            },
+            avgConfidence: 0
+        };
+
+        // DOM Elements
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const analyzeBulkBtn = document.getElementById('analyzeBulkBtn');
+        const analyzeContentBtn = document.getElementById('analyzeContentBtn');
+        const intentResults = document.getElementById('intentResults');
+        const intentChart = document.getElementById('intentChart');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const intentFilter = document.getElementById('intentFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Update stats display
+        const totalQueriesEl = document.getElementById('totalQueries');
+        const commonIntentEl = document.getElementById('commonIntent');
+        const avgConfidenceEl = document.getElementById('avgConfidence');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderResults();
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Event listeners
+            analyzeBtn.addEventListener('click', analyzeSingleQuery);
+            analyzeBulkBtn.addEventListener('click', analyzeBulkQueries);
+            analyzeContentBtn.addEventListener('click', analyzeContent);
+            exportBtn.addEventListener('click', exportResults);
+            clearBtn.addEventListener('click', clearAllData);
+            intentFilter.addEventListener('change', renderResults);
+            sortFilter.addEventListener('change', renderResults);
+        });
+
+        // Analyze a single query
+        function analyzeSingleQuery() {
+            const query = document.getElementById('searchQuery').value.trim();
+            const contentType = document.getElementById('contentType').value;
+            
+            if (!query) {
+                alert('Please enter a query to analyze');
+                return;
+            }
+            
+            const result = analyzeIntent(query, contentType);
+            analyzedQueries.push(result);
+            
+            // Update stats
+            updateIntentStats(result);
+            
+            // Save to localStorage
+            localStorage.setItem('analyzedQueries', JSON.stringify(analyzedQueries));
+            localStorage.setItem('intentStats', JSON.stringify(intentStats));
+            
+            // Update UI
+            renderResults();
+            updateStats();
+            
+            // Clear input
+            document.getElementById('searchQuery').value = '';
+        }
+
+        // Analyze multiple queries
+        function analyzeBulkQueries() {
+            const queriesText = document.getElementById('bulkQueries').value.trim();
+            
+            if (!queriesText) {
+                alert('Please enter queries to analyze');
+                return;
+            }
+            
+            const queries = queriesText.split('\n').filter(q => q.trim() !== '');
+            
+            queries.forEach(query => {
+                const result = analyzeIntent(query, 'search');
+                analyzedQueries.push(result);
+                updateIntentStats(result);
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('analyzedQueries', JSON.stringify(analyzedQueries));
+            localStorage.setItem('intentStats', JSON.stringify(intentStats));
+            
+            // Update UI
+            renderResults();
+            updateStats();
+            
+            // Clear input
+            document.getElementById('bulkQueries').value = '';
+        }
+
+        // Analyze content
+        function analyzeContent() {
+            const content = document.getElementById('contentText').value.trim();
+            const language = document.getElementById('contentLanguage').value;
+            
+            if (!content) {
+                alert('Please enter content to analyze');
+                return;
+            }
+            
+            // For content, we'll analyze the overall intent
+            const result = analyzeContentIntent(content, language);
+            analyzedQueries.push(result);
+            
+            // Update stats
+            updateIntentStats(result);
+            
+            // Save to localStorage
+            localStorage.setItem('analyzedQueries', JSON.stringify(analyzedQueries));
+            localStorage.setItem('intentStats', JSON.stringify(intentStats));
+            
+            // Update UI
+            renderResults();
+            updateStats();
+            
+            // Clear input
+            document.getElementById('contentText').value = '';
+        }
+
+        // Analyze intent of a query
+        function analyzeIntent(query, type) {
+            // Simple rule-based intent analysis
+            // In a real application, this would use more sophisticated NLP techniques
+            
+            const queryLower = query.toLowerCase();
+            let intent = 'informational';
+            let confidence = 70;
+            let keywords = [];
+            
+            // Check for navigational intent (looking for a specific site)
+            if (queryLower.includes('.com') || queryLower.includes('website') || 
+                queryLower.includes('login') || queryLower.match(/\b(go to|find|search for) (the )?[\w]+\b/)) {
+                intent = 'navigational';
+                confidence = 85;
+                keywords = extractKeywords(query, ['website', 'login', 'homepage', 'portal']);
+            }
+            // Check for transactional intent (ready to buy)
+            else if (queryLower.includes('buy') || queryLower.includes('purchase') || 
+                     queryLower.includes('price') || queryLower.includes('deal') ||
+                     queryLower.includes('discount') || queryLower.includes('coupon') ||
+                     queryLower.includes('order') || queryLower.includes('shop')) {
+                intent = 'transactional';
+                confidence = 80;
+                keywords = extractKeywords(query, ['buy', 'purchase', 'price', 'deal', 'discount', 'order', 'shop']);
+            }
+            // Check for commercial investigation (comparing products)
+            else if (queryLower.includes('best') || queryLower.includes('review') || 
+                     queryLower.includes('compare') || queryLower.includes('top') ||
+                     queryLower.includes('vs') || queryLower.includes('versus') ||
+                     queryLower.includes('recommend')) {
+                intent = 'commercial';
+                confidence = 75;
+                keywords = extractKeywords(query, ['best', 'review', 'compare', 'top', 'vs', 'versus', 'recommend']);
+            }
+            // Default to informational
+            else {
+                keywords = extractKeywords(query, ['how', 'what', 'when', 'where', 'why', 'guide', 'tutorial']);
+            }
+            
+            // Adjust confidence based on query length and specificity
+            const wordCount = query.split(' ').length;
+            if (wordCount > 5) confidence += 5;
+            if (wordCount < 3) confidence -= 10;
+            
+            // Ensure confidence is within bounds
+            confidence = Math.max(30, Math.min(95, confidence));
+            
+            return {
+                id: Date.now().toString(),
+                query,
+                type,
+                intent,
+                confidence,
+                keywords,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Analyze content intent
+        function analyzeContentIntent(content, language) {
+            // Simplified content analysis
+            const contentLower = content.toLowerCase();
+            let intent = 'informational';
+            let confidence = 70;
+            let keywords = extractKeywords(content, 10); // Extract top 10 keywords
+            
+            // Check for commercial intent
+            if (contentLower.includes('buy now') || contentLower.includes('shop now') || 
+                contentLower.includes('add to cart') || contentLower.includes('purchase')) {
+                intent = 'transactional';
+                confidence = 80;
+            }
+            // Check for navigational intent
+            else if (contentLower.includes('click here') || contentLower.includes('visit our') || 
+                     contentLower.includes('learn more') || contentLower.includes('sign up')) {
+                intent = 'navigational';
+                confidence = 75;
+            }
+            // Check for commercial investigation
+            else if (contentLower.includes('comparison') || contentLower.includes('review') || 
+                     contentLower.includes('best') || contentLower.includes('top')) {
+                intent = 'commercial';
+                confidence = 70;
+            }
+            
+            return {
+                id: Date.now().toString(),
+                query: content.substring(0, 100) + '...',
+                type: 'content',
+                intent,
+                confidence,
+                keywords,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Extract keywords from text
+        function extractKeywords(text, specificKeywords = null) {
+            if (specificKeywords) {
+                return specificKeywords.filter(keyword => 
+                    text.toLowerCase().includes(keyword.toLowerCase())
+                );
+            }
+            
+            // Simple keyword extraction (in a real app, use more sophisticated methods)
+            const words = text.toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .split(/\s+/)
+                .filter(word => word.length > 3);
+                
+            // Count frequency
+            const frequency = {};
+            words.forEach(word => {
+                frequency[word] = (frequency[word] || 0) + 1;
+            });
+            
+            // Sort by frequency and return top 5
+            return Object.entries(frequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(entry => entry[0]);
+        }
+
+        // Update intent statistics
+        function updateIntentStats(result) {
+            intentStats.total++;
+            intentStats.byType[result.intent]++;
+            
+            // Update average confidence
+            const totalConfidence = analyzedQueries.reduce((sum, item) => sum + item.confidence, 0);
+            intentStats.avgConfidence = Math.round(totalConfidence / analyzedQueries.length);
+        }
+
+        // Update statistics display
+        function updateStats() {
+            totalQueriesEl.textContent = intentStats.total;
+            avgConfidenceEl.textContent = `${intentStats.avgConfidence || 0}%`;
+            
+            // Find most common intent
+            if (intentStats.total > 0) {
+                const intents = intentStats.byType;
+                const mostCommon = Object.keys(intents).reduce((a, b) => 
+                    intents[a] > intents[b] ? a : b
+                );
+                
+                // Format intent name
+                const intentNames = {
+                    informational: 'Informational',
+                    navigational: 'Navigational',
+                    transactional: 'Transactional',
+                    commercial: 'Commercial'
+                };
+                
+                commonIntentEl.textContent = intentNames[mostCommon];
+            } else {
+                commonIntentEl.textContent = '-';
+            }
+        }
+
+        // Render results
+        function renderResults() {
+            if (analyzedQueries.length === 0) {
+                intentResults.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No analysis yet. Enter a query to see intent analysis results.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Filter results
+            let filteredResults = [...analyzedQueries];
+            const intentFilterValue = intentFilter.value;
+            if (intentFilterValue !== 'all') {
+                filteredResults = filteredResults.filter(item => item.intent === intentFilterValue);
+            }
+            
+            // Sort results
+            const sortValue = sortFilter.value;
+            if (sortValue === 'confidence') {
+                filteredResults.sort((a, b) => b.confidence - a.confidence);
+            } else if (sortValue === 'alphabetical') {
+                filteredResults.sort((a, b) => a.query.localeCompare(b.query));
+            } else if (sortValue === 'type') {
+                filteredResults.sort((a, b) => a.intent.localeCompare(b.intent));
+            }
+            
+            // Render results
+            intentResults.innerHTML = '';
+            filteredResults.forEach(result => {
+                const intentItem = document.createElement('div');
+                intentItem.className = 'intent-item';
+                
+                const intentNames = {
+                    informational: 'Informational',
+                    navigational: 'Navigational',
+                    transactional: 'Transactional',
+                    commercial: 'Commercial Investigation'
+                };
+                
+                const intentColors = {
+                    informational: '#4caf50',
+                    navigational: '#2196f3',
+                    transactional: '#ff9800',
+                    commercial: '#9c27b0'
+                };
+                
+                intentItem.innerHTML = `
+                    <div class="intent-header">
+                        <div class="intent-type" style="color: ${intentColors[result.intent]}">
+                            ${intentNames[result.intent]}
+                        </div>
+                        <div class="intent-confidence">${result.confidence}% confidence</div>
+                    </div>
+                    <div class="intent-query">"${result.query}"</div>
+                    <div class="intent-keywords">
+                        ${result.keywords.map(keyword => 
+                            `<span class="keyword">${keyword}</span>`
+                        ).join('')}
+                    </div>
+                `;
+                
+                intentResults.appendChild(intentItem);
+            });
+            
+            // Update chart
+            updateIntentChart();
+        }
+
+        // Update intent distribution chart
+        function updateIntentChart() {
+            if (analyzedQueries.length === 0) return;
+            
+            // Count intents
+            const intentCounts = {
+                informational: 0,
+                navigational: 0,
+                transactional: 0,
+                commercial: 0
+            };
+            
+            analyzedQueries.forEach(item => {
+                intentCounts[item.intent]++;
+            });
+            
+            // Calculate percentages
+            const total = analyzedQueries.length;
+            const percentages = {
+                informational: (intentCounts.informational / total) * 100,
+                navigational: (intentCounts.navigational / total) * 100,
+                transactional: (intentCounts.transactional / total) * 100,
+                commercial: (intentCounts.commercial / total) * 100
+            };
+            
+            // Update chart bars
+            const bars = intentChart.querySelectorAll('.chart-bar');
+            bars[0].querySelector('.chart-bar-inner').style.height = `${percentages.informational}%`;
+            bars[0].querySelector('.chart-value').textContent = `${Math.round(percentages.informational)}%`;
+            
+            bars[1].querySelector('.chart-bar-inner').style.height = `${percentages.navigational}%`;
+            bars[1].querySelector('.chart-value').textContent = `${Math.round(percentages.navigational)}%`;
+            
+            bars[2].querySelector('.chart-bar-inner').style.height = `${percentages.transactional}%`;
+            bars[2].querySelector('.chart-value').textContent = `${Math.round(percentages.transactional)}%`;
+            
+            bars[3].querySelector('.chart-bar-inner').style.height = `${percentages.commercial}%`;
+            bars[3].querySelector('.chart-value').textContent = `${Math.round(percentages.commercial)}%`;
+        }
+
+        // Export results
+        function exportResults() {
+            if (analyzedQueries.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(analyzedQueries, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'intent-analysis-results.json';
+            link.click();
+            
+            showNotification('Results exported successfully!', 'success');
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all analysis data? This action cannot be undone.')) {
+                analyzedQueries = [];
+                intentStats = {
+                    total: 0,
+                    byType: {
+                        informational: 0,
+                        navigational: 0,
+                        transactional: 0,
+                        commercial: 0
+                    },
+                    avgConfidence: 0
+                };
+                
+                localStorage.removeItem('analyzedQueries');
+                localStorage.removeItem('intentStats');
+                
+                renderResults();
+                updateStats();
+                
+                showNotification('All data cleared successfully!', 'success');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                transition: all 0.3s;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--info)'};
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
